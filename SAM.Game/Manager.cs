@@ -52,7 +52,7 @@ namespace SAM.Game
 
         //private API.Callback<APITypes.UserStatsStored> UserStatsStoredCallback;
 
-        public Manager(long gameId, API.Client client)
+        public Manager(long gameId, API.Client client, bool isAuto = false)
         {
             this.InitializeComponent();
 
@@ -104,7 +104,25 @@ namespace SAM.Game
             //this.UserStatsStoredCallback = new API.Callback(1102, new API.Callback.CallbackFunction(this.OnUserStatsStored));
 
             this.RefreshStats();
+
+            if (isAuto)
+            {
+                base.Text += " | Automatic Unlock";
+
+                // Disable input
+                _ResetButton.Enabled = false;
+                _ReloadButton.Enabled = false;
+                _StoreButton.Enabled = false;
+                _LockAllButton.Enabled = false;
+                _InvertAllButton.Enabled = false;
+                _UnlockAllButton.Enabled = false;
+                _MainTabControl.Enabled = false;
+
+                isAutomatic = isAuto;
+            }
         }
+
+        public bool isAutomatic { get; private set; }
 
         private void AddAchievementIcon(Stats.AchievementInfo info, Image icon)
         {
@@ -393,6 +411,50 @@ namespace SAM.Game
 
             this._GameStatusLabel.Text = $"Retrieved {this._AchievementListView.Items.Count} achievements and {this._StatisticsDataGridView.Rows.Count} statistics.";
             this.EnableInput();
+
+            if (isAutomatic)
+            {
+
+                // Check all.
+                foreach (ListViewItem item in this._AchievementListView.Items)
+                {
+                    item.Checked = true;
+                }
+
+                if (this._AchievementListView.Items.Count == 0)
+                {
+                    Application.Exit();
+                }
+
+                // Store
+                var achievements = new List<Stats.AchievementInfo>();
+                foreach (ListViewItem item in this._AchievementListView.Items)
+                {
+                    var achievementInfo = item.Tag as Stats.AchievementInfo;
+                    if (achievementInfo != null &&
+                        achievementInfo.IsAchieved != item.Checked)
+                    {
+                        achievementInfo.IsAchieved = item.Checked;
+                        achievements.Add(item.Tag as Stats.AchievementInfo);
+                    }
+                }
+
+                if (achievements.Count == 0)
+                {
+                    Application.Exit();
+                }
+
+                foreach (Stats.AchievementInfo info in achievements)
+                {
+                    if (this._SteamClient.SteamUserStats.SetAchievement(info.Id, info.IsAchieved) == false)
+                    {
+                        Application.Exit();
+                    }
+                }
+
+                // Done
+                Application.Exit();
+            }
         }
 
         private void RefreshStats()
@@ -782,15 +844,31 @@ namespace SAM.Game
             var view = (DataGridView)sender;
             if (e.Exception is Stats.StatIsProtectedException)
             {
-                e.ThrowException = false;
-                e.Cancel = true;
-                view.Rows[e.RowIndex].ErrorText = "Stat is protected! -- you can't modify it";
+                if (isAutomatic)
+                {
+                    Application.Exit();
+                }
+                else
+                {
+                    e.ThrowException = false;
+                    e.Cancel = true;
+                    view = (DataGridView)sender;
+                    view.Rows[e.RowIndex].ErrorText = "Stat is protected! -- you can't modify it";
+                }
             }
             else
             {
-                e.ThrowException = false;
-                e.Cancel = true;
-                view.Rows[e.RowIndex].ErrorText = "Invalid value";
+                if (isAutomatic)
+                {
+                    Application.Exit();
+                }
+                else
+                {
+                    e.ThrowException = false;
+                    e.Cancel = true;
+                    view = (DataGridView)sender;
+                    view.Rows[e.RowIndex].ErrorText = "Invalid value";
+                }
             }
         }
 
@@ -859,13 +937,20 @@ namespace SAM.Game
 
             if ((info.Permission & 3) != 0)
             {
-                MessageBox.Show(
-                    this,
-                    "Sorry, but this is a protected achievement and cannot be managed with Steam Achievement Manager.",
-                    "Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-                e.NewValue = e.CurrentValue;
+                if (isAutomatic)
+                {
+                    Application.Exit();
+                }
+                else
+                {
+                    MessageBox.Show(
+                        this,
+                        "Sorry, but this is a protected achievement and cannot be managed with Steam Achievement Manager.",
+                        "Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    e.NewValue = e.CurrentValue;
+                }
             }
         }
 

@@ -140,6 +140,7 @@ namespace SAM.Picker
 
             this.RefreshGames();
             this._RefreshGamesButton.Enabled = true;
+            this._UnlockAllButton.Enabled = true;
             this.DownloadNextLogo();
         }
 
@@ -528,6 +529,46 @@ namespace SAM.Picker
             {
                 this.AddGameToLogoQueue(info);
                 this.DownloadNextLogo();
+            }
+        }
+
+        private void _UnlockAllButton_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show(
+"This will open and close A LOT of windows.\n\nIn your case, it could be " + this._Games.Count + " windows.\n\nWhile this shouldn't cause a performance drop, it might get annoying if you're trying to do something.\n\nIs this OK?",
+"Warning",
+MessageBoxButtons.YesNo,
+MessageBoxIcon.Warning) != DialogResult.No)
+            {
+                //code here
+                unlockAllProgress.Visible = true;
+                unlockAllProgress.Value = 0;
+                unlockAllProgress.Maximum = this._Games.Count;
+
+                foreach (var Game in this._Games)
+                {
+                    unlockAllProgress.Value++;
+                    try
+                    {
+                        var process = Process.Start("SAM.Game.exe", Game.Value.Id.ToString(CultureInfo.InvariantCulture) + " auto");
+
+                        if (process != null && process.HasExited != true)
+                        {
+                            process.WaitForExit();
+                        }
+                    }
+                    catch (Win32Exception)
+                    {
+                        MessageBox.Show(
+                            this,
+                            "Failed to start SAM.Game.exe.",
+                            "Error",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                    }
+                }
+
+                unlockAllProgress.Visible = false;
             }
         }
     }
