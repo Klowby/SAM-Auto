@@ -1,20 +1,17 @@
-# Steam Achievement Manager
+# Steam Achievement Manager - Auto
 
 Steam Achievement Manager (SAM) is a lightweight, portable application used to manage achievements and statistics in the popular PC gaming platform Steam. This application requires the [Steam client](https://store.steampowered.com/about/), a Steam account and network access. Steam must be running and the user must be logged in.
 
-This is the code for SAM. The closed-source version originally released in 2008, last major release in 2011, and last updated in 2013 (a hotfix).
+## What does Auto mean?
 
-The code is being made available so that those interested can do as they like with it.
+There is a pull request that added unlock all available achievements feature to SAM https://github.com/gibbed/SteamAchievementManager/pull/62
 
-There are some changes to the code since the last closed-source release:
-- General code maintenance to bring it into a more modern state.
-- Icons have been replaced with ones from the Fugue Icons set.
-- Version has been bumped to 7.0.x.x to indicate the open-source release.
+I just copied those codes and merged them to original SAM.
 
-[Download latest release](https://github.com/gibbed/SteamAchievementManager/releases/latest).
+Actually I have no idea what I am doing but somehow it works.
 
-[![Build status](https://ci.appveyor.com/api/projects/status/00vic6jliar6j0ol/branch/master?svg=true)](https://ci.appveyor.com/project/gibbed/steamachievementmanager/branch/master)
+[Download latest release](https://github.com/Klowby/SAM-Auto/releases/latest).
 
 ## Attribution
 
-Most (if not all) icons are from the [Fugue Icons](https://p.yusukekamiyamane.com/) set.
+- All Credits to [Gibbed](https://github.com/gibbed/) and code from https://github.com/gibbed/SteamAchievementManager/pull/62
