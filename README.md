@@ -1,4 +1,4 @@
-# Steam Achievement Manager - Auto
+# [Steam Achievement Manager](https://github.com/gibbed/SteamAchievementManager) - Auto
 
 Steam Achievement Manager (SAM) is a lightweight, portable application used to manage achievements and statistics in the popular PC gaming platform Steam. This application requires the [Steam client](https://store.steampowered.com/about/), a Steam account and network access. Steam must be running and the user must be logged in.
 
