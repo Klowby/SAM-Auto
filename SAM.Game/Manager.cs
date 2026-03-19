@@ -326,8 +326,7 @@ namespace SAM.Game
                             foreach (var bits in stat.Children.Where(
                                 b => string.Compare(b.Name, "bits", StringComparison.InvariantCultureIgnoreCase) == 0))
                             {
-                                if (bits.Valid == false ||
-                                    bits.Children == null)
+                                if (bits.Valid == false || bits.Children == null)
                                 {
                                     continue;
                                 }
